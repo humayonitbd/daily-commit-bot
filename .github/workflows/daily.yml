@@ -3,7 +3,7 @@ name: Daily Commit Bot
 
 on:
   schedule:
-    - cron: "30 3 * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Update daily log
-        run: date -u +"%Y-%m-%d" > daily-log.txt
+        run: date -u +"%Y-%m-%d %H:%M:%S" > daily-log.txt
 
       - name: Commit and push
         run: |
