@@ -2,7 +2,7 @@ name: Test Daily Commit Bot
 
 on:
   schedule:
-    # Prottek 5 minute por por run korar jonno (GitHub er free tier-e 5 minute er kom cron sometimes delay korte pare)
+    # Prottek 5 minute por por cron run korar jonno
     - cron: '*/5 * * * *'
   workflow_dispatch: # Manual run korar jonno
 
@@ -18,32 +18,14 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Check today's commits
-        id: check_commits
-        run: |
-          # Aajker diner shuru (00:00:00 UTC) theke ekhon porjonto kono commit hoyese kina check korbe
-          TODAY_START=$(date -u +"%Y-%m-%d 00:00:00")
-          LAST_COMMIT_DATE=$(git log -1 --format=%cd --date=format:"%Y-%m-%d %H:%M:%S")
-          
-          echo "Last commit date: $LAST_COMMIT_DATE"
-          echo "Today start: $TODAY_START"
-          
-          # Jodi last commit ajker tarikh er age hoy, tahobe commit nai bole dhora hobe
-          if [[ "$LAST_COMMIT_DATE" < "$TODAY_START" ]]; then
-            echo "has_committed=false" >> $GITHUB_OUTPUT
-          else
-            echo "has_committed=true" >> $GITHUB_OUTPUT
-          fi
-
       - name: Make Automated Commit
-        if: steps.check_commits.outputs.has_committed == 'false'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.io"
           
-          # Ekta test log file-e update kore commit kora hocche
-          echo "Test automated commit on $(date -u)" >> test-log.txt
+          # Protibar run hole file-er modhye timestamp add hobe, jate push korar moto change thake
+          echo "Automated trigger check at $(date -u)" >> test-log.txt
           
           git add test-log.txt
-          git commit -m "test: automated check-in commit [skip ci]"
+          git commit -m "chore: automated check-in commit [skip ci]"
           git push
